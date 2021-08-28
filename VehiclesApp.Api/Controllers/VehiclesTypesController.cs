@@ -25,23 +25,6 @@ namespace VehiclesApp.Api.Controllers
             return View(await _context.VehiclesType.ToListAsync());
         }
 
-        // GET: VehiclesTypes/Details/5
-        public async Task<IActionResult> Details(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var vehiclesType = await _context.VehiclesType
-                .FirstOrDefaultAsync(m => m.id == id);
-            if (vehiclesType == null)
-            {
-                return NotFound();
-            }
-
-            return View(vehiclesType);
-        }
 
         // GET: VehiclesTypes/Create
         public IActionResult Create()
@@ -49,18 +32,33 @@ namespace VehiclesApp.Api.Controllers
             return View();
         }
 
-        // POST: VehiclesTypes/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("id,Description")] VehiclesType vehiclesType)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(vehiclesType);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                try
+                {
+                    _context.Add(vehiclesType);
+                    await _context.SaveChangesAsync();
+                    return RedirectToAction(nameof(Index));
+                }
+                catch (DbUpdateException dbUpdateException)
+                {
+                    if (dbUpdateException.InnerException.Message.Contains("duplicate"))
+                    {
+                        ModelState.AddModelError(string.Empty, "This vehicle already exist.");
+                    }
+                    else
+                    {
+                        ModelState.AddModelError(string.Empty, dbUpdateException.InnerException.Message);
+                    }
+                }
+                catch (Exception exception)
+                {
+                    ModelState.AddModelError(string.Empty, exception.Message);
+                }
             }
             return View(vehiclesType);
         }
@@ -82,11 +80,9 @@ namespace VehiclesApp.Api.Controllers
         }
 
         // POST: VehiclesTypes/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("id,Description")] VehiclesType vehiclesType)
+        public async Task<IActionResult> Edit(int id,  VehiclesType vehiclesType)
         {
             if (id != vehiclesType.id)
             {
@@ -100,18 +96,22 @@ namespace VehiclesApp.Api.Controllers
                     _context.Update(vehiclesType);
                     await _context.SaveChangesAsync();
                 }
-                catch (DbUpdateConcurrencyException)
+                catch (DbUpdateException dbUpdateException)
                 {
-                    if (!VehiclesTypeExists(vehiclesType.id))
+                    if (dbUpdateException.InnerException.Message.Contains("duplicate"))
                     {
-                        return NotFound();
+                        ModelState.AddModelError(string.Empty, "This vehicle already exist.");
                     }
                     else
                     {
-                        throw;
+                        ModelState.AddModelError(string.Empty, dbUpdateException.InnerException.Message);
                     }
                 }
-                return RedirectToAction(nameof(Index));
+                catch (Exception exception)
+                {
+                    ModelState.AddModelError(string.Empty, exception.Message);
+                }
+                
             }
             return View(vehiclesType);
         }
@@ -131,23 +131,11 @@ namespace VehiclesApp.Api.Controllers
                 return NotFound();
             }
 
-            return View(vehiclesType);
-        }
-
-        // POST: VehiclesTypes/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
-        {
-            var vehiclesType = await _context.VehiclesType.FindAsync(id);
             _context.VehiclesType.Remove(vehiclesType);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
-        private bool VehiclesTypeExists(int id)
-        {
-            return _context.VehiclesType.Any(e => e.id == id);
-        }
     }
 }
+ 
