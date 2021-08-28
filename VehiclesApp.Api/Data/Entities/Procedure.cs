@@ -18,6 +18,6 @@ namespace VehiclesApp.Api.Data.Entities
         [Display(Name = "Price")]
         [MaxLength(50, ErrorMessage = "{0:C2}")]
         [Required(ErrorMessage = "The field {0} is required")]
-        public string Price { get; set; }
+        public Decimal Price { get; set; }
     }
 }

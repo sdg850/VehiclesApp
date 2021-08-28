@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Vehicles.API.Data;
 using VehiclesApp.Api.Data;
 
 namespace VehiclesApp.Api
@@ -29,7 +30,9 @@ namespace VehiclesApp.Api
             services.AddDbContext<DataContext>(x =>
             {
                 x.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"));
+                
             });
+            services.AddTransient<SeedDb>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
