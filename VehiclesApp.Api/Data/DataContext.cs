@@ -13,6 +13,8 @@ namespace VehiclesApp.Api.Data
         {
         }
 
+        public DbSet<Brand> Brands { get; set; }
+        public DbSet<DocumentsType> DocumentsType { get; set; }
         public DbSet<Procedure> Procedures { get; set; }
         public DbSet<VehiclesType> VehiclesType { get; set; }
 
@@ -20,8 +22,11 @@ namespace VehiclesApp.Api.Data
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+            modelBuilder.Entity<Brand>().HasIndex(x => x.Description).IsUnique();
+            modelBuilder.Entity<DocumentsType>().HasIndex(x => x.Description).IsUnique();            
             modelBuilder.Entity<Procedure>().HasIndex(x => x.Description).IsUnique();
             modelBuilder.Entity<VehiclesType>().HasIndex(x => x.Description).IsUnique();
+
 
         }
 
