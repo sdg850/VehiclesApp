@@ -13,12 +13,16 @@ namespace VehiclesApp.Api.Data
         {
         }
 
+        public DbSet<Procedure> Procedures { get; set; }
         public DbSet<VehiclesType> VehiclesType { get; set; }
+
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+            modelBuilder.Entity<Procedure>().HasIndex(x => x.Description).IsUnique();
             modelBuilder.Entity<VehiclesType>().HasIndex(x => x.Description).IsUnique();
+
         }
 
     }

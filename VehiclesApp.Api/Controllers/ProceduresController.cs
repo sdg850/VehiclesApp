@@ -1,20 +1,18 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
 using VehiclesApp.Api.Data;
 using VehiclesApp.Api.Data.Entities;
 
 namespace VehiclesApp.Api.Controllers
 {
-    public class VehiclesTypesController : Controller
+    public class ProceduresController : Controller
     {
-        private readonly DataContext _context;
-
-        public VehiclesTypesController(DataContext context)
+        public readonly DataContext _context;
+        public ProceduresController(DataContext context)
         {
             _context = context;
         }
@@ -22,7 +20,7 @@ namespace VehiclesApp.Api.Controllers
         // GET: VehiclesTypes
         public async Task<IActionResult> Index()
         {
-            return View(await _context.VehiclesType.ToListAsync());
+            return View(await _context.Procedures.ToListAsync());
         }
 
 
@@ -34,13 +32,13 @@ namespace VehiclesApp.Api.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("id,Description")] VehiclesType vehiclesType)
+        public async Task<IActionResult> Create(Procedure procedures)
         {
             if (ModelState.IsValid)
             {
                 try
                 {
-                    _context.Add(vehiclesType);
+                    _context.Add(procedures);
                     await _context.SaveChangesAsync();
                     return RedirectToAction(nameof(Index));
                 }
@@ -60,10 +58,10 @@ namespace VehiclesApp.Api.Controllers
                     ModelState.AddModelError(string.Empty, exception.Message);
                 }
             }
-            return View(vehiclesType);
+            return View(procedures);
         }
 
-        // GET: VehiclesTypes/Edit/5
+        // GET: Procedures/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -71,20 +69,20 @@ namespace VehiclesApp.Api.Controllers
                 return NotFound();
             }
 
-            var vehiclesType = await _context.VehiclesType.FindAsync(id);
-            if (vehiclesType == null)
+            Procedure procedures = await _context.Procedures.FindAsync(id);
+            if (procedures == null)
             {
                 return NotFound();
             }
-            return View(vehiclesType);
+            return View(procedures);
         }
 
-        // POST: VehiclesTypes/Edit/5
+        // POST: Procedures/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id,  VehiclesType vehiclesType)
+        public async Task<IActionResult> Edit(int id, Procedure procedure)
         {
-            if (id != vehiclesType.id)
+            if (id != procedure.id)
             {
                 return NotFound();
             }
@@ -93,7 +91,7 @@ namespace VehiclesApp.Api.Controllers
             {
                 try
                 {
-                    _context.Update(vehiclesType);
+                    _context.Update(procedure);
                     await _context.SaveChangesAsync();
                     return RedirectToAction(nameof(Index));
                 }
@@ -101,7 +99,7 @@ namespace VehiclesApp.Api.Controllers
                 {
                     if (dbUpdateException.InnerException.Message.Contains("duplicate"))
                     {
-                        ModelState.AddModelError(string.Empty, "This vehicle already exist.");
+                        ModelState.AddModelError(string.Empty, "This Procedure already exist.");
                     }
                     else
                     {
@@ -112,12 +110,12 @@ namespace VehiclesApp.Api.Controllers
                 {
                     ModelState.AddModelError(string.Empty, exception.Message);
                 }
-                
+
             }
-            return View(vehiclesType);
+            return View(procedure);
         }
 
-        // GET: VehiclesTypes/Delete/5
+        // GET: Procedures/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -125,18 +123,17 @@ namespace VehiclesApp.Api.Controllers
                 return NotFound();
             }
 
-            var vehiclesType = await _context.VehiclesType
+            Procedure procedure = await _context.Procedures
                 .FirstOrDefaultAsync(m => m.id == id);
-            if (vehiclesType == null)
+            if (procedure == null)
             {
                 return NotFound();
             }
 
-            _context.VehiclesType.Remove(vehiclesType);
+            _context.Procedures.Remove(procedure);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
     }
 }
- 
